@@ -2,25 +2,20 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
 
 namespace DBDatos
 {
 
     public class DBPruebas : ICapaDatos
     {
-       /*
-        * La lista de usuarios se guarda en la base de datos 
-        * La lista de entradas se guarda en la base de datos
-        * La lista de lineas de log se guardan en la base de datos
-        * 
-        * Generamos doble enlace para tener un acceso eficiente
-        * 
-        */
+        /*
+         * La lista de usuarios se guarda en la base de datos 
+         * La lista de entradas se guarda en la base de datos
+         * La lista de lineas de log se guardan en la base de datos
+         * 
+         * Generamos doble enlace para tener un acceso eficiente
+         * 
+         */
 
         private Int32 idUsuarioActual;
         private Int32 idEntradaActual;
@@ -60,10 +55,10 @@ namespace DBDatos
          * El primer usuario tendrá que estar generado en la base de datos al instanciarla
          */
         private Int32 CrearAdminInicial(
-            String nombre = "admin", 
-            String apellidos = "admin", 
-            String email = "admin@admin.com", 
-            String pass = "admin", 
+            String nombre = "admin",
+            String apellidos = "admin",
+            String email = "admin@admin.com",
+            String pass = "admin",
             Int32 rol = 0
             )
         {
@@ -71,29 +66,29 @@ namespace DBDatos
             if (nombre != null && apellidos != null &&
                 email != null && pass != null)
             {
-                    if (new EmailAddressAttribute().IsValid(email))
+                if (new EmailAddressAttribute().IsValid(email))
+                {
+                    if (nombre.Length > 0 && apellidos.Length > 0 && pass.Length > 0)
                     {
-                        if (nombre.Length > 0 && apellidos.Length > 0 && pass.Length > 0)
-                        {
-                            Int32 idUsuario = ObtenerSiguienteIdUsuarioLibre();
-                            //Crear un nuevo usuario
-                            Usuario usuario = new Usuario(idUsuario, nombre, apellidos, email, pass, rol);
-                            //Guardarlo en la base datos
-                            diccionarioUsuarios.Add(email, usuario);
-                            flag = 0;
-                        }
-                        else flag = 3;
+                        Int32 idUsuario = ObtenerSiguienteIdUsuarioLibre();
+                        //Crear un nuevo usuario
+                        Usuario usuario = new Usuario(idUsuario, nombre, apellidos, email, pass, rol);
+                        //Guardarlo en la base datos
+                        diccionarioUsuarios.Add(email, usuario);
+                        flag = 0;
                     }
-                    else flag = 2;
+                    else flag = 3;
+                }
+                else flag = 2;
             }
             return flag;
         }
-    
+
         /*
          * Pasamos el objeto UsuarioCreador para asegurar que se ha pasado por el método de loggin,
          * ya que es el único método publico capaz de recuperar un objeto usuario de la base de datos
          */
-        public Int32 CrearUsuario(Usuario admin, String nombre, String apellidos, String email, String pass, Int32 rol=1)
+        public Int32 CrearUsuario(Usuario admin, String nombre, String apellidos, String email, String pass, Int32 rol = 1)
         {
             Int32 flag = -1;
             if (admin != null && nombre != null && apellidos != null &&
@@ -151,27 +146,23 @@ namespace DBDatos
             return flag;
         }
 
+        /*
         public bool ActualizarUsuario(Usuario usuario)
         {
             //Actualizar datos de usuario en base de datos
         }
+        */
 
-/*
-        public Usuario BuscarUsuarioPorId(Int32 idUsuarioBorrar)
-        {
 
-        }
-*/
-
-        private Usuario BuscarUsuarioPorEmail(String email) 
+        private Usuario BuscarUsuarioPorEmail(String email)
         {
             Usuario usuario = diccionarioUsuarios[email];
             return usuario;
         }
 
-        public Usuario LoggIn (String email, String pass)
+        public Usuario LoggIn(String email, String pass)
         {
-            Usuario usuario = BuscarUsuarioPorEmail (email);
+            Usuario usuario = BuscarUsuarioPorEmail(email);
             if (usuario != null && usuario.comprobarPass(pass))
             {
                 return usuario;
@@ -186,7 +177,7 @@ namespace DBDatos
         public int CrearEntrada(Usuario usuarioCreador, String usuario, String pass, String descripcion, /*datos*/)
         {
             Int32 flag = -1;
-            if (usuarioCreador != null)
+            if (usuarioCreador != null && usuario.Length > 0 && pass.Length > 0 && descripcion.Length > 0)
             {
                 /*
                  * Requisito propio extra
@@ -197,11 +188,8 @@ namespace DBDatos
                  * 
                  */
 
-                if(usuario.Length, pass, descripcion)
-
                 if (!usuarioCreador.comprobarPass(pass))
                 {
-                    if ()
                     Int32 idEntrada = ObtenerSiguienteIdEntradaLibre();
                     //Creación de entrada
                     Entrada entrada = new Entrada(idEntrada, usuario, pass, descripcion, usuarioCreador.Email);
@@ -216,16 +204,31 @@ namespace DBDatos
             return flag;
         }
 
+        public int BorrarEntrada(Usuario usuario, Int32 idEntrada)
+        {
+            Int32 flag = -1;
+            if (usuario != null)
+            {
+                if (usuario.EsEntradaPropia(idEntrada))
+                {
+                    Entrada entrada = BuscarEntradaPorId(idEntrada);
+                    foreach (String emailUsuario in entrada.ListaEmailsUsuariosLectores)
+                    {
+                        Usuario user = BuscarUsuarioPorEmail(emailUsuario);
+                    }
+                }
+                else flag = 1;
 
-        public void BorrarEntrada(Int32 idUsuario, Int32 idEntrada)
+            }
+            return flag;
+        }
+
+        /*
+        public void ActualizarEntrada(Int32 idUsuario, Int32 idEntrada)
         {
 
         }
-
-        public void EditarEntrada(Int32 idUsuario, Int32 idEntrada)
-        {
-
-        }
+        */
 
         private Entrada BuscarEntradaPorId(Int32 id)
         {
@@ -233,41 +236,84 @@ namespace DBDatos
             return entrada;
         }
 
-        public Entrada RecuperarEntrada(Usuario usuario, Int32 id)
+        public Entrada RecuperarEntrada(Usuario usuario, Int32 idEntrada)
         {
+            Entrada entrada = null;
             if (usuario != null)
             {
                 /*
                  * Los administradores pueden recuprar cualquier entrada, 
                  * aunque no estén especificados explícitamente
                  */
-
-                Entrada entrada = BuscarEntradaPorId(id);
-
-                return entrada;
+                //Si es el propietario devuelvo objeto real.
+                entrada = BuscarEntradaPorId(idEntrada);
+                if (entrada != null)
+                {
+                    if (entrada.EsLector(usuario.Email))
+                    {
+                        // si solo tiene permiso de lectura, devuelvo una copia
+                        entrada = (Entrada)entrada.Clone();
+                    }
+                    //si no es lector ni creador
+                    else if (!entrada.EsCreador(usuario.Email))
+                    {
+                        entrada = null;
+                    }
+                }
             }
-            return null;
+            return entrada;
+        }
+
+
+        /*
+         * Pasamos el objeto UsuarioCreador para asegurar que se ha pasado por el método de loggin,
+         * ya que es el único método publico capaz de recuperar un objeto usuario de la base de datos
+         */
+        public int AñadirLectorAEntrada(Int32 idEntrada, Usuario usuarioCreador, String emailUsuarioLector) {
+            int flag = -1;
+            if (usuarioCreador != null)
+            {
+                if (usuarioCreador.EsEntradaPropia(idEntrada))
+                {
+                    Entrada entrada = RecuperarEntrada(usuarioCreador, idEntrada);
+                    Usuario lector = BuscarUsuarioPorEmail(emailUsuarioLector);
+                    if (lector != null)
+                    {
+                        lector.AñadirLecturaEntrada(idEntrada);
+                        entrada.AñadirUsuarioLector(emailUsuarioLector);
+                        flag = 0;
+                    }
+                    else flag = 2;
+                }
+                else flag = 1;
+            }
+            return flag;
         }
 
         /*
          * Pasamos el objeto UsuarioCreador para asegurar que se ha pasado por el método de loggin,
          * ya que es el único método publico capaz de recuperar un objeto usuario de la base de datos
          */
-        public int AñadirLectorAEntrada(Int32 idEntrada, Usuario UsuarioCreador, String emailUsuarioLector) {
+        public int BorrarLectorAEntrada(Int32 idEntrada, Usuario usuarioCreador, String emailUsuarioLector)
+        {
             int flag = -1;
-            if (UsuarioCreador != null && UsuarioCreador.EsEntradaPropia(idEntrada))
+            if (usuarioCreador != null)
             {
-                Usuario lector = BuscarUsuarioPorEmail(emailUsuarioLector);
-                if (lector != null)
+                if (usuarioCreador.EsEntradaPropia(idEntrada))
                 {
-                    lector.AñadirLecturaEntrada(idEntrada);
-                    flag = 0;
+                    Entrada entrada = RecuperarEntrada(usuarioCreador, idEntrada);
+                    Usuario lector = BuscarUsuarioPorEmail(emailUsuarioLector);
+                    if (lector != null)
+                    {
+                        lector.BorrarLecturaEntrada(idEntrada);
+                        entrada.BorrarUsuarioLector(emailUsuarioLector);
+                        flag = 0;
+                    }
+                    else flag = 2;
                 }
-                else flag = 2;
+                else flag = 1;
             }
-            else flag = 1;
             return flag;
-
         }
 
         public void AñadirLineaLog(String linea)
@@ -288,6 +334,6 @@ namespace DBDatos
 
         }
     }
-
+}
 
    

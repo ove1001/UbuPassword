@@ -1,4 +1,7 @@
 ﻿
+using System;
+using System.Collections.Generic;
+
 namespace LibreriaDeClases
 {
     public class Usuario
@@ -96,6 +99,10 @@ namespace LibreriaDeClases
             return BorrarEntrada(ListaEntradasLegibles, idEntrada);
         }
 
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 
 }

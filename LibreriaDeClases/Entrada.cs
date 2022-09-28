@@ -1,4 +1,6 @@
-﻿//using DBDatos;
+﻿
+using System;
+using System.Collections.Generic;
 
 namespace LibreriaDeClases
 {
@@ -20,7 +22,8 @@ namespace LibreriaDeClases
             this.Pass = pass;
             this.Descripcion = descripcion;
             this.EmailUsuarioCreador = emailUsuarioCreador;
-            this.listaEmailsUsuariosLectores = new List<String>();
+            this.ListaEmailsUsuariosLectores = new List<String>();
+            //listaEmailsUsuariosLectores.Add(emailUsuarioCreador);
         }
 
         public Int32 IdEntrada { get => idEntrada; set => idEntrada = value; }
@@ -28,24 +31,61 @@ namespace LibreriaDeClases
         public String Pass { get => pass; set => pass = value; }
         public String Descripcion { get => descripcion; set => descripcion = value; }
         public String EmailUsuarioCreador { get => emailUsuarioCreador; set => emailUsuarioCreador = value; }
+        public List<string> ListaEmailsUsuariosLectores { get => listaEmailsUsuariosLectores; set => listaEmailsUsuariosLectores = value; }
 
-        /* requisito propio 
-        public bool comprobarPassSecreto(Usuario usuario, String pass)
-        {          
-            return !usuario.comprobarPass(pass);
-        }
-        */
-
-        public int añadirUsuarioLector(String emailUsuarioAñadidor, String emailUsuarioLector)
+        public int AñadirUsuarioLector(String emailUsuarioLector)
         {
-            if (emailUsuarioAñadidor == EmailUsuarioCreador)
+            int flag = -1;
+            if (emailUsuarioLector != null)
             {
-                idUsuariosLectores.Add(iDusuarioLector);
-                iDusuarioLector.AñadirAccesoEntrada(this);
-                return 0;
+                ListaEmailsUsuariosLectores.Add(emailUsuarioLector);
+                flag = 0;
             }
             return 1;
+        }
+        public int BorrarUsuarioLector(String emailUsuarioLector)
+        {
+            int flag = -1;
+            if (emailUsuarioLector != null)
+            {
+                if (ListaEmailsUsuariosLectores.Contains(emailUsuarioLector))
+                {
+                    ListaEmailsUsuariosLectores.Remove(emailUsuarioLector);
+                    flag = 0;
+                }
+                else flag = 1;
+            }
+            return 1;
+        }
 
+        public bool EsCreador(String emailUsuario)
+        {
+            bool flag = false;
+            if (emailUsuario != null)
+            {
+                if (EmailUsuarioCreador == emailUsuario)
+                {
+                    flag = true;
+                }
+            }
+            return flag;
+        }
+        public bool EsLector(String emailUsuario)
+        {
+            bool flag = false;
+            if(emailUsuario != null)
+            {
+                if (ListaEmailsUsuariosLectores.Contains(emailUsuario))
+                {
+                    flag = true;
+                }
+            }
+            return flag;
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
 
     }
