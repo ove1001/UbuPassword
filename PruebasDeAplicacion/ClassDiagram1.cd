@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="LibreriaDeClases.Tests.EntradaTests">
+    <Position X="0.5" Y="0.5" Width="2" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="LibreriaDeClases.Tests.LineaLogTests">
+    <Position X="2.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="LibreriaDeClases.Tests.UsuarioTests">
+    <Position X="5.25" Y="0.5" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DBDatos.Tests.PruebasAplicaciontest">
+    <Position X="9.25" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>BAAAAAAAAAAAAAAAAQAAAAAACAEAAAAAAAAAAAAQAAA=</HashCode>
+      <FileName>PruebaAplicacionTest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

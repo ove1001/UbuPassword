@@ -38,24 +38,28 @@ namespace LibreriaDeClases
             int flag = -1;
             if (emailUsuarioLector != null)
             {
-                ListaEmailsUsuariosLectores.Add(emailUsuarioLector);
-                flag = 0;
+                if (!EsCreador(emailUsuarioLector))
+                {
+                    ListaEmailsUsuariosLectores.Add(emailUsuarioLector);
+                    flag = 0;
+                }
+                else flag = 1;
             }
-            return 1;
+            return flag;
         }
         public int BorrarUsuarioLector(String emailUsuarioLector)
         {
             int flag = -1;
             if (emailUsuarioLector != null)
             {
-                if (ListaEmailsUsuariosLectores.Contains(emailUsuarioLector))
+                if (EsLector(emailUsuarioLector))
                 {
                     ListaEmailsUsuariosLectores.Remove(emailUsuarioLector);
                     flag = 0;
                 }
                 else flag = 1;
             }
-            return 1;
+            return flag;
         }
 
         public bool EsCreador(String emailUsuario)
@@ -86,6 +90,16 @@ namespace LibreriaDeClases
         public object Clone()
         {
             return this.MemberwiseClone();
+        }
+
+        public String UsuariosLectores()
+        {
+            String usuariosLectores = "";
+            foreach(String emailUsuario in ListaEmailsUsuariosLectores)
+            {
+                usuariosLectores += emailUsuario + "\n\r ";
+            }
+            return usuariosLectores;
         }
 
     }

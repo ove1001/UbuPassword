@@ -12,8 +12,8 @@ namespace LibreriaDeClases
         private String email;
         private String pass;
         private Int32 rol;
-        private List<Int32> ListaEntradasCreadas;
-        private List<Int32> ListaEntradasLegibles;
+        private List<Int32> listaEntradasCreadas;
+        private List<Int32> listaEntradasLegibles;
 
         public Usuario(int idUsuario, string nombre, string apellidos, string email, string passwd, int rol)
         {
@@ -26,20 +26,21 @@ namespace LibreriaDeClases
             this.ListaEntradasCreadas = new List<Int32>();
             this.ListaEntradasLegibles = new List<Int32>();
         }
-
         public Int32 IdUsuario { get => idUsuario; set => idUsuario = value; }
         public string Nombre { get => nombre; set => nombre = value; }
         public string Apellidos { get => apellidos; set => apellidos = value; }
         public string Email { get => email; set => email = value; }
         public Int32 Rol { get => rol; set => rol = value; }
         public string Pass { get => pass; set => pass = Utilidades.Encriptar(value); }
+        public List<int> ListaEntradasCreadas { get => listaEntradasCreadas; set => listaEntradasCreadas = value; }
+        public List<int> ListaEntradasLegibles { get => listaEntradasLegibles; set => listaEntradasLegibles = value; }
 
         public bool EsAdmin()
         {
             return Rol == 0;
         }
 
-        public bool comprobarPass(String pass)
+        public bool ComprobarPass(String pass)
         {
             return Utilidades.Encriptar(pass) == Pass;
         }
@@ -47,6 +48,11 @@ namespace LibreriaDeClases
         public bool EsEntradaPropia(Int32 idEntrada)
         {
             return ListaEntradasCreadas.Contains(idEntrada);  
+        }
+
+        public bool EsEntradaLegible(Int32 idEntrada)
+        {
+            return ListaEntradasLegibles.Contains(idEntrada);
         }
 
         private Int32 AñadirEntrada(List<Int32> listaEntradas, Int32 idEntrada)
@@ -69,9 +75,9 @@ namespace LibreriaDeClases
             Int32 flag = -1;
             if (listaEntradas != null)
             {
-                if (ListaEntradasCreadas.Contains(idEntrada))
+                if (listaEntradas.Contains(idEntrada))
                 {
-                    ListaEntradasCreadas.Remove(idEntrada);
+                    listaEntradas.Remove(idEntrada);
                     flag = 0;
                 }
                 else flag = 1;
